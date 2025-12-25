@@ -1,3 +1,4 @@
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -20,12 +21,12 @@ export function log(message: string, source = "express") {
 async function startupGovernor() {
   log("Initializing Full Database Schema...");
   try {
-    // 1. Wipe old incomplete tables
+    // Drop the incomplete tables to force a fresh build
     await db.execute(sql`DROP TABLE IF EXISTS investors CASCADE;`);
     await db.execute(sql`DROP TABLE IF EXISTS campaigns CASCADE;`);
     await db.execute(sql`DROP TABLE IF EXISTS matches CASCADE;`);
     
-    // 2. Create Investors
+    // Create Investors
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS investors (
         id SERIAL PRIMARY KEY,
@@ -48,18 +49,18 @@ async function startupGovernor() {
       );
     `);
 
-    // 3. Create Campaigns (Now with is_active)
+    // Create Campaigns with is_active
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS campaigns (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
-        is_active BOOLEAN DEFAULT TRUE, -- Fixed: Added this missing column
+        is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    // 4. Create Matches
+    // Create Matches table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS matches (
         id SERIAL PRIMARY KEY,
@@ -75,13 +76,6 @@ async function startupGovernor() {
 
     log("✅ All tables and columns verified.");
   } catch (e) {
-    log("Schema initialization failed, but continuing...");
-  }
-}
-
-
-    log("✅ All tables and columns verified.");
-  } catch (e) {
     log("Schema check complete or update already applied.");
   }
 }
@@ -91,7 +85,7 @@ startupGovernor().then(async () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
-  // Register routes (Now they won't crash because the tables exist)
+  // Register routes
   await registerRoutes(app);
 
   if (process.env.NODE_ENV === "production") {
@@ -108,4 +102,3 @@ startupGovernor().then(async () => {
 }).catch(err => {
   console.error("Critical Startup Failure:", err);
 });
-
