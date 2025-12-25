@@ -8,9 +8,20 @@ import { db } from "./db";
 const app = express();
 const httpServer = createServer(app);
 
-// 1. THE GOVERNOR (The Safety Net)
+// 1. Define the missing log function to prevent ReferenceErrors
+export function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
+
+// 2. THE GOVERNOR: Self-healing database setup
 async function startupGovernor() {
-  console.log("Checking for Patty's Data...");
+  log("Checking for Patty's Data...");
   try {
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS investors (
@@ -20,23 +31,39 @@ async function startupGovernor() {
         amount TEXT NOT NULL
       );
     `);
-    console.log("✅ System ready for demo.");
+    log("✅ System ready for demo.");
   } catch (e) {
-    console.log("System already initialized.");
+    log("System already initialized or connection pending.");
   }
 }
 
-// 2. THE EXECUTION (Everything waits for the Governor)
+// 3. THE EXECUTION: Controlled startup
 startupGovernor().then(async () => {
-  
-  // All your app.use calls from Screenshot 2 go HERE
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
-  // Logging middleware
+  // Logging middleware with the captured JSON fix
   app.use((req, res, next) => {
     const start = Date.now();
-    // ... (rest of your logging logic from screenshot)
+    const path = req.path;
+    let capturedJsonResponse: Record<string, any> | undefined = undefined;
+
+    const originalResJson = res.json;
+    res.json = function (bodyJson, ...args) {
+      capturedJsonResponse = bodyJson;
+      return originalResJson.apply(res, [bodyJson, ...args]);
+    };
+
+    res.on("finish", () => {
+      const duration = Date.now() - start;
+      if (path.startsWith("/api")) {
+        let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+        if (capturedJsonResponse) {
+          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        }
+        log(logLine);
+      }
+    });
     next();
   });
 
@@ -45,7 +72,9 @@ startupGovernor().then(async () => {
 
   // Error handling
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(status).json({ message });
   });
 
   // Production vs Dev setup
@@ -56,73 +85,13 @@ startupGovernor().then(async () => {
     await setupVite(app, httpServer);
   }
 
-  // 3. START THE SERVER
-  httpServer.listen(10000, "0.0.0.0", () => {
-    console.log("The link is live and stable.");
+  // Final step: Start the engine on Render's port
+  const port = parseInt(process.env.PORT || "10000", 10);
+  httpServer.listen(port, "0.0.0.0", () => {
+    log(`serving on port ${port}`);
   });
+}).catch(err => {
+  console.error("Critical Startup Failure:", err);
+  process.exit(1);
 });
 
-
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
-(async () => {
-  await registerRoutes(httpServer, app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (process.env.NODE_ENV === "production") {
-    serveStatic(app);
-  } else {
-    const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
-  }
-
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
-})();
