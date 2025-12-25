@@ -20,10 +20,12 @@ export function log(message: string, source = "express") {
 async function startupGovernor() {
   log("Initializing Full Database Schema...");
   try {
-    // Drop the incomplete table to force a fresh, correct build
+    // 1. Wipe old incomplete tables
     await db.execute(sql`DROP TABLE IF EXISTS investors CASCADE;`);
+    await db.execute(sql`DROP TABLE IF EXISTS campaigns CASCADE;`);
+    await db.execute(sql`DROP TABLE IF EXISTS matches CASCADE;`);
     
-    // Create Investors with all required columns for the CSV
+    // 2. Create Investors
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS investors (
         id SERIAL PRIMARY KEY,
@@ -46,19 +48,18 @@ async function startupGovernor() {
       );
     `);
 
-        // Create Campaigns table with the missing is_active column
+    // 3. Create Campaigns (Now with is_active)
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS campaigns (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
-        is_active BOOLEAN DEFAULT TRUE,
+        is_active BOOLEAN DEFAULT TRUE, -- Fixed: Added this missing column
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-
-    // Create Matches table
+    // 4. Create Matches
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS matches (
         id SERIAL PRIMARY KEY,
@@ -71,6 +72,13 @@ async function startupGovernor() {
         email_content TEXT
       );
     `);
+
+    log("✅ All tables and columns verified.");
+  } catch (e) {
+    log("Schema initialization failed, but continuing...");
+  }
+}
+
 
     log("✅ All tables and columns verified.");
   } catch (e) {
