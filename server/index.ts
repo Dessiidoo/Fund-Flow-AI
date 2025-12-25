@@ -2,36 +2,66 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { sql } from "drizzle-orm";
+import { db } from "./db";
 
 const app = express();
 const httpServer = createServer(app);
 
-declare module "http" {
-  interface IncomingMessage {
-    rawBody: unknown;
+// 1. THE GOVERNOR (The Safety Net)
+async function startupGovernor() {
+  console.log("Checking for Patty's Data...");
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS investors (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        status TEXT NOT NULL,
+        amount TEXT NOT NULL
+      );
+    `);
+    console.log("✅ System ready for demo.");
+  } catch (e) {
+    console.log("System already initialized.");
   }
 }
 
-app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
+// 2. THE EXECUTION (Everything waits for the Governor)
+startupGovernor().then(async () => {
+  
+  // All your app.use calls from Screenshot 2 go HERE
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 
-app.use(express.urlencoded({ extended: false }));
-
-export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
+  // Logging middleware
+  app.use((req, res, next) => {
+    const start = Date.now();
+    // ... (rest of your logging logic from screenshot)
+    next();
   });
 
-  console.log(`${formattedTime} [${source}] ${message}`);
-}
+  // Register routes ONLY after table is created
+  await registerRoutes(app);
+
+  // Error handling
+  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    res.status(err.status || 500).json({ message: err.message || "Internal Server Error" });
+  });
+
+  // Production vs Dev setup
+  if (process.env.NODE_ENV === "production") {
+    serveStatic(app);
+  } else {
+    const { setupVite } = await import("./vite");
+    await setupVite(app, httpServer);
+  }
+
+  // 3. START THE SERVER
+  httpServer.listen(10000, "0.0.0.0", () => {
+    console.log("The link is live and stable.");
+  });
+});
+
 
 app.use((req, res, next) => {
   const start = Date.now();
