@@ -80,8 +80,6 @@
     "ws": "^8.18.0",
     "zod": "^3.25.76",
     "zod-validation-error": "^3.5.4",
-
-    // BUILD-TIME TOOLS (MUST BE HERE FOR RENDER)
     "esbuild": "^0.25.0",
     "vite": "^7.3.0"
   },
