@@ -140,7 +140,7 @@ export async function registerRoutes(
 
   // --- AI MATCHING & EMAIL GENERATION ---
   
-  app.post(api.campaigns.generateMatches.generateMatches.path, async (req, res) => {
+  app.post(api.campaigns.generateMatches.path, async (req, res) => {
     const campaignId = parseInt(req.params.id);
     const campaign = await storage.getCampaign(campaignId);
     if (!campaign) return res.status(404).json({ message: "Campaign not found" });
@@ -200,7 +200,7 @@ export async function registerRoutes(
     res.json({ count: matchCount });
   });
 
-  app.post(api.matches.generateEmail.generateEmail.path, async (req, res) => {
+  app.post(api.matches.generateEmail.path, async (req, res) => {
     const matchId = parseInt(req.params.id);
     const match = await storage.getMatch(matchId);
     if (!match) return res.status(404).json({ message: "Match not found" });
