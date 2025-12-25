@@ -25,13 +25,14 @@ export async function registerRoutes(
   // Auth & Integrations
   await setupAuth(app);
   registerAuthRoutes(app);
-  registerChatRoutes(app);
+  
   registerImageRoutes(app);
 
   // --- SEEDING FUNCTION ---
-  async function seedInvestors() {
+  async function seedInvestors() { // <--- Added "async" here
     const existing = await storage.getInvestors();
-    if (existing.length > 0) return; // Already seeded
+    if (existing.length > 0) return;
+
 
     const csvPath = path.join(process.cwd(), "attached_assets", "Fund_Database-Angel_Investors_1766572251362.csv");
     if (!fs.existsSync(csvPath)) {
