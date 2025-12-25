@@ -1,7 +1,9 @@
-export function requireAuth(
-  req: any,
-  res: any,
-  next: any
-) {
-  next();
+import type { Express } from "express";
+
+export function setupAuth(app: Express) {
+  // no-op for Render / giveaway mode
+}
+
+export function registerAuthRoutes(app: Express) {
+  // no-op for Render / giveaway mode
 }
