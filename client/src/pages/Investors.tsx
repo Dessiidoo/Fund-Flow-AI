@@ -8,6 +8,17 @@ import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
+function getHostname(url: string | null | undefined): string {
+  if (!url) return "";
+  try {
+    // Add protocol if missing
+    const urlStr = url.startsWith("http") ? url : `https://${url}`;
+    return new URL(urlStr).hostname || url;
+  } catch {
+    return url;
+  }
+}
+
 export default function Investors() {
   const [search, setSearch] = useState("");
   const { data: investors, isLoading } = useInvestors({ search });
@@ -80,8 +91,8 @@ export default function Investors() {
                     <TableCell>
                       <div className="font-medium text-foreground">{investor.name}</div>
                       {investor.website && (
-                        <a href={investor.website} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-0.5">
-                          {new URL(investor.website).hostname} <ExternalLink className="w-3 h-3" />
+                        <a href={investor.website.startsWith("http") ? investor.website : `https://${investor.website}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-0.5">
+                          {getHostname(investor.website)} <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
                     </TableCell>
