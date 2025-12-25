@@ -46,15 +46,17 @@ async function startupGovernor() {
       );
     `);
 
-    // Create Campaigns table
+        // Create Campaigns table with the missing is_active column
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS campaigns (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
+        is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
 
     // Create Matches table
     await db.execute(sql`
