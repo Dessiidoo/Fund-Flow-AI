@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { registerAuthRoutes, setupAuth } from "./replit_integrations/auth";
-import { registerChatRoutes } from "./replit_integrations/chat";
+
 import { registerImageRoutes } from "./replit_integrations/image";
 import fs from 'fs';
 import path from 'path';
