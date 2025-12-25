@@ -1,12 +1,16 @@
 import path from "path";
 import { fileURLToPath } from "url";
 
-// These two lines replace the old __dirname
+// This manually recreates __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Now your existing code will work:
-const distPath = path.resolve(__dirname, "public");
+// Your existing logic now works without error:
+export function serveStatic(app) {
+  const distPath = path.resolve(__dirname, "public");
+  // ... rest of your function
+}
+
 
 
 export function serveStatic(app: Express) {
