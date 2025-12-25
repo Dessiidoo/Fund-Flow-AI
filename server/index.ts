@@ -1,3 +1,4 @@
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -94,4 +95,3 @@ startupGovernor().then(async () => {
   console.error("Critical Startup Failure:", err);
   process.exit(1);
 });
-
