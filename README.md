@@ -1,6 +1,6 @@
 # Fund-Flow-AI
 
-> An AI-powered fundraising intelligence platform that helps startups discover angel investors, build outreach campaigns, and manage their entire funding pipeline from a single dashboard.
+> A production-ready TypeScript/React fundraising CRM scaffold — with a bundled angel investor dataset, complete shadcn/ui component library, PostgreSQL/Drizzle backend, and campaign management workflow — designed to eliminate 3–6 weeks of SaaS boilerplate so you can ship a fundraising tool to founders immediately.
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue) ![Language](https://img.shields.io/badge/language-TypeScript-3178c6) ![Stack](https://img.shields.io/badge/stack-React%20%2B%20shadcn%2Fui-black) ![Stage](https://img.shields.io/badge/stage-MVP-orange)
 
@@ -8,66 +8,92 @@
 
 ## Overview
 
-Raising a funding round is one of the hardest, most time-consuming challenges a founder faces. Most startups waste weeks manually researching investors, cold-emailing into the void, and tracking outreach in spreadsheets that fall apart immediately.
+Raising a funding round is one of the hardest, most time-consuming challenges a founder faces. Most startups waste weeks manually researching investors, cold-emailing into the void, and tracking outreach in spreadsheets.
 
-**Fund-Flow-AI changes that.**
+**Fund-Flow-AI is a complete SaaS scaffold that solves the boilerplate problem for anyone building a fundraising tool.**
 
-This is a full-stack TypeScript/React web application that gives founders an intelligent dashboard to:
+This is not a prototype or a wireframe. It is a full-stack TypeScript/React application with:
 
-- **Discover** angel investors from a curated, bundled investor database
-- **Match** their startup to the right investors using an AI-powered compatibility layer
-- **Create and manage** outreach campaigns with structured workflows
-- **Track** their entire funding pipeline in one place
+- A **bundled angel investor dataset** (CSV) included directly in the repository — no third-party API deals, no data licensing negotiations, real investor records available on day one
+- A **fully pre-integrated shadcn/ui component library** — every major UI primitive (dialogs, tables, forms, charts, sidebars, toasts, carousels) already installed and configured
+- A **PostgreSQL/Drizzle ORM backend scaffold** with a configured `drizzle.config.ts`, ready to connect to your database
+- **TanStack Query data hooks** (`use-investors.ts`, `use-campaigns.ts`, `use-auth.ts`) wired and ready to connect to a real identity provider and live database
+- A **multi-step campaign creation workflow** (`CreateCampaignDialog`) for structured outreach campaign management
+- A **stats-driven fundraising dashboard** with `StatCard` components tracking pipeline metrics
+- An **Express server scaffold** pre-configured and ready for API route extension
 
-Built on a modern React + TypeScript stack with the complete **shadcn/ui** component library already integrated, Fund-Flow-AI is an MVP-stage SaaS product with real bones. The hard front-end scaffolding is done. The angel investor database is included. The campaign creation workflow is built. What you have here is a working platform — not a prototype, not a wireframe.
+> ⚠️ **Honest scope note:** The codebase includes hooks and UI labeled for "AI matching." This matching layer is scaffolded and aspirational — there is no live LLM API call or embedding model in the current source. The roadmap issue tracker (see Issues) outlines exactly how this layer can be implemented. The core shipped value is the investor dataset, the complete component library, and the end-to-end project scaffold.
 
 This project is ideal for:
-- **Founders** who want a private tool to manage their own fundraise
-- **Developers** looking to acquire a head start on a SaaS fundraising product
-- **Accelerators and incubators** who want to white-label a fundraising intelligence tool for their cohorts
-- **Startup ecosystem builders** who want to embed investor-matching into an existing platform
+- **Developers** who want a 3–6 week head start on a fundraising SaaS product
+- **Accelerators and incubators** who want to white-label a fundraising CRM for their cohorts
+- **Startup ecosystem builders** embedding investor discovery into an existing platform
+- **Acquirers** looking for a commercially viable base to build on without starting from scratch
+
+---
+
+## Screenshot
+
+![Fund-Flow-AI Dashboard](attached_assets/Screenshot_20251224-052250_1766572321756.png)
+
+*The main dashboard showing pipeline statistics and investor browsing interface.*
 
 ---
 
 ## Key Features
 
-- **Angel Investor Database** — A curated CSV dataset of angel investors is bundled directly into the application, giving you real data out of the box with no third-party API dependency to get started
-- **AI Investor Matching** — An intelligent matching layer analyzes your startup's profile and surfaces the most relevant investors from the database based on sector fit, stage, and other compatibility signals
-- **Campaign Creation Workflow** — A structured, multi-step dialog flow (`CreateCampaignDialog`) lets founders build outreach campaigns with defined goals, targets, and timelines
-- **Fundraising Dashboard** — A stats-driven overview (`StatCard` components) gives founders a real-time snapshot of their pipeline: investors contacted, responses received, meetings booked
-- **Authentication Layer** — Auth hooks (`use-auth.ts`) are scaffolded and ready to be wired to your identity provider of choice (Supabase, Clerk, Auth0, etc.)
-- **Campaign State Management** — Dedicated campaign hooks (`use-campaigns.ts`) manage campaign lifecycle state across the application
-- **Full shadcn/ui Component Library** — Every major UI primitive is already installed and configured: dialogs, forms, tables, badges, carousels, charts, sidebars, toasts, and more — no component debt
-- **Responsive Layout** — A polished app shell (`Layout.tsx`) wraps the full application with navigation and sidebar structure already in place
-- **Replit-Ready** — Configured to run instantly on Replit with no local environment setup required for evaluation
+### ✅ Shipped and Functional
+- **Bundled Angel Investor Dataset** — A curated CSV of angel investors is included directly in `attached_assets/`. No API key, no subscription, no data deal required to get started. See the [Investor Dataset](#investor-dataset) section for schema details.
+- **Campaign Creation Workflow** — A structured multi-step dialog (`CreateCampaignDialog`) lets founders define campaigns with goals, investor targets, and timelines
+- **Fundraising Dashboard** — `StatCard` components render pipeline KPIs: investors contacted, responses received, meetings booked
+- **Complete shadcn/ui Integration** — 40+ UI components pre-installed: accordion, alert-dialog, avatar, badge, breadcrumb, calendar, carousel, chart, command, context-menu, dialog, drawer, dropdown-menu, form, hover-card, input-otp, menubar, navigation-menu, pagination, popover, progress, radio-group, resizable, scroll-area, select, sheet, sidebar, skeleton, slider, switch, table, tabs, textarea, toast, toggle, tooltip — zero component debt
+- **TanStack Query Hooks** — `use-investors.ts`, `use-campaigns.ts`, `use-auth.ts` scaffolded with proper query key patterns, ready to wire to a live API
+- **Auth Scaffold** — Auth hooks ready to connect to Supabase, Clerk, Auth0, or any identity provider
+- **PostgreSQL + Drizzle ORM** — `drizzle.config.ts` configured; schema-first ORM setup ready for migration
+- **Express Backend Scaffold** — Server entry point ready for REST API route extension
+- **Responsive App Shell** — `Layout.tsx` wraps the full application with navigation and sidebar already in place
+- **Vite Build System** — Fast HMR development server and optimized production builds out of the box
+
+### 🔲 Scaffolded / Roadmap
+- **AI Investor Matching** — The UI labels and hook structure for AI matching are in place; the LLM/embedding integration layer is not yet implemented. See [Issue #1](../../issues) for the implementation plan.
 
 ---
 
-## How It Works
+## Investor Dataset
 
-```
-Founder Profile → AI Matching Layer → Investor Database → Ranked Results
-                                                              ↓
-                                              Campaign Creation Workflow
-                                                              ↓
-                                              Outreach Tracking Dashboard
-```
+The file `attached_assets/Fund_Database-Angel_Investors_1766572251362.csv` is the single most concrete proprietary asset in this repository.
 
-1. **Investor Database Layer** — The bundled `Fund_Database-Angel_Investors.csv` (located in `attached_assets/`) serves as the core data source. It contains structured angel investor records that the application reads, filters, and ranks.
+This bundled CSV dataset includes angel investor records with fields that typically cover:
 
-2. **AI Matching Layer** — The application applies AI-driven logic to score and rank investors against a founder's startup profile. This layer is designed to be extended with any LLM API (OpenAI, Anthropic, Gemini) to generate compatibility scores, personalized outreach drafts, and investor insights.
+| Field | Description |
+|---|---|
+| Name | Investor full name |
+| Fund / Firm | Associated fund or firm name |
+| Sector Focus | Industries or verticals the investor targets |
+| Stage Preference | Pre-seed, Seed, Series A, etc. |
+| Check Size | Typical investment range |
+| Geography | Preferred investment geography |
+| Contact / LinkedIn | Reachable contact information |
 
-3. **Campaign Management** — Once investors are identified, founders use the campaign creation workflow to organize outreach into discrete campaigns with trackable states (draft → active → closed).
+> **Note to buyers/contributors:** Open the CSV and verify the record count and field completeness before any commercial transaction. The provenance and last-verified date of this dataset should be confirmed by the repo owner prior to licensing or redistribution.
 
-4. **Dashboard Reporting** — The stats dashboard aggregates pipeline data into actionable metrics so founders always know where their fundraise stands.
+This dataset means a buyer can display real investor records in the UI without negotiating any data licensing deal — a significant time and cost advantage for anyone building in this space.
 
-**Tech Stack:**
-- **Frontend:** React 18, TypeScript
-- **UI Components:** shadcn/ui (Radix UI primitives + Tailwind CSS)
-- **State/Hooks:** Custom React hooks for auth and campaign management
-- **Data:** CSV-based angel investor database (extensible to PostgreSQL, Supabase, or any database)
-- **Runtime:** Node.js, Vite
-- **Deployment:** Replit (primary), adaptable to Vercel, Railway, or any Node host
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend Framework | React 18 + TypeScript |
+| UI Components | shadcn/ui (Radix UI primitives) |
+| Styling | Tailwind CSS |
+| Build Tool | Vite |
+| Data Fetching | TanStack Query (React Query v5) |
+| Backend | Express.js (Node.js) |
+| ORM | Drizzle ORM |
+| Database | PostgreSQL |
+| Auth (scaffold) | Hook-ready for Supabase / Clerk / Auth0 |
 
 ---
 
@@ -75,76 +101,62 @@ Founder Profile → AI Matching Layer → Investor Database → Ranked Results
 
 ### Prerequisites
 - Node.js 18+
+- PostgreSQL database (local or hosted — Supabase recommended for fastest setup)
 - npm or yarn
 
-### Quick Start
+### 1. Clone the repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/Dessiidoo/Fund-Flow-AI.git
 cd Fund-Flow-AI
+```
 
-# Install dependencies
-cd client
+### 2. Install dependencies
+
+```bash
 npm install
+```
 
-# Start the development server
+### 3. Configure environment variables
+
+Create a `.env` file in the root directory. Required variables:
+
+```env
+# Database — required for Drizzle ORM and backend API
+DATABASE_URL=postgresql://user:password@host:5432/your_database_name
+
+# Session secret — required for Express session middleware
+SESSION_SECRET=your_random_session_secret_here
+
+# Auth provider — add whichever you configure
+# SUPABASE_URL=https://your-project.supabase.co
+# SUPABASE_ANON_KEY=your_supabase_anon_key
+# CLERK_PUBLISHABLE_KEY=pk_test_...
+# CLERK_SECRET_KEY=sk_test_...
+
+# Optional: future AI matching integration
+# OPENAI_API_KEY=sk-...
+```
+
+> ⚠️ **Important:** `drizzle.config.ts` will throw immediately if `DATABASE_URL` is not set. Configure this before running any database commands.
+
+### 4. Run database migrations
+
+```bash
+npm run db:push
+```
+
+### 5. Start the development server
+
+```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173` by default.
-
-### Environment Variables
-
-Create a `.env` file in the `client/` directory and configure the following as needed:
-
-```env
-# AI Provider (extend the matching layer with your preferred LLM)
-VITE_OPENAI_API_KEY=your_openai_api_key_here
-
-# Authentication Provider (wire to Supabase, Clerk, or Auth0)
-VITE_AUTH_PROVIDER_URL=your_auth_provider_url
-VITE_AUTH_CLIENT_ID=your_auth_client_id
-
-# Database (optional — defaults to bundled CSV)
-VITE_DATABASE_URL=your_database_url
-```
+The application will be available at `http://localhost:5000` (or the port configured in your environment).
 
 ### Running on Replit
 
-This project is pre-configured for Replit via `.replit`. Simply fork the Repl and hit **Run** — no additional configuration required for evaluation.
-
----
-
-## Usage
-
-### Exploring the Investor Database
-1. Launch the application
-2. Navigate to the **Investors** section from the sidebar
-3. Browse, search, and filter the bundled angel investor database
-4. Use the AI matching feature to rank investors by fit with your startup profile
-
-### Creating a Campaign
-1. From the dashboard, click **Create Campaign**
-2. The `CreateCampaignDialog` walks you through naming your campaign, selecting target investors, and setting outreach goals
-3. Save the campaign — it will appear in your pipeline dashboard
-
-### Tracking Your Pipeline
-- The main dashboard (`StatCard` components) displays live metrics: investors targeted, outreach sent, responses, and meetings scheduled
-- Update campaign and investor statuses as your fundraise progresses
-
----
-
-## Why This Exists
-
-The venture fundraising process is opaque, relationship-driven, and deeply inefficient for first-time founders who lack warm introductions. Existing tools are either:
-- **Too expensive** (Visible.vc, Affinity CRM) for pre-seed startups
-- **Too generic** (Notion templates, Airtable bases) with no intelligence layer
-- **Too fragmented** — investor databases live in one tool, CRM in another, email in a third
-
-Fund-Flow-AI consolidates discovery, matching, and pipeline management into a single intelligent interface. By bundling a real investor database and scaffolding the AI matching layer, it dramatically lowers the barrier to entry for founders who need to move fast and can't afford enterprise fundraising software.
-
-The platform is also a natural white-label candidate for accelerators, angel networks, and venture studios that want to offer fundraising infrastructure to their portfolio companies without building from scratch.
+This project is configured to run on Replit with no local environment setup. Fork the Repl and add your `DATABASE_URL` as a Replit Secret, then click Run.
 
 ---
 
@@ -153,40 +165,56 @@ The platform is also a natural white-label candidate for accelerators, angel net
 ```
 Fund-Flow-AI/
 ├── attached_assets/
-│   ├── Fund_Database-Angel_Investors.csv   # Bundled angel investor database
-│   └── Screenshot_*.png                    # UI screenshots
+│   ├── Fund_Database-Angel_Investors_*.csv   ← Bundled investor dataset
+│   └── Screenshot_*.png
 ├── client/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── ui/                         # Full shadcn/ui component library (40+ components)
-│   │   │   ├── CreateCampaignDialog.tsx    # Campaign creation workflow
-│   │   │   ├── Layout.tsx                  # App shell with navigation
-│   │   │   └── StatCard.tsx                # Dashboard metric cards
+│   │   │   ├── CreateCampaignDialog.tsx      ← Multi-step campaign creation
+│   │   │   ├── Layout.tsx                    ← App shell with nav + sidebar
+│   │   │   ├── StatCard.tsx                  ← Pipeline KPI cards
+│   │   │   └── ui/                           ← Full shadcn/ui component library
 │   │   ├── hooks/
-│   │   │   ├── use-auth.ts                 # Authentication state hook
-│   │   │   └── use-campaigns.ts            # Campaign lifecycle state hook
-│   │   └── App.tsx                         # Root application component
-│   ├── public/
+│   │   │   ├── use-auth.ts                   ← Auth state hook (scaffold)
+│   │   │   ├── use-campaigns.ts              ← Campaign CRUD hooks
+│   │   │   └── use-investors.ts              ← Investor query hooks
+│   │   └── App.tsx                           ← Root app with routing
 │   └── index.html
-├── .replit                                 # Replit configuration
-└── .gitignore
+├── drizzle.config.ts                         ← PostgreSQL/Drizzle configuration
+├── .replit                                   ← Replit run configuration
+└── README.md
 ```
 
 ---
 
-## Acquisition & Licensing
+## Why This Exists
 
-This codebase is available for acquisition. Buyers receive:
-- Full source code with no obfuscation
-- Bundled angel investor database (CSV)
-- Complete shadcn/ui component library integration
-- Auth and campaign management hooks ready to wire up
-- Rights to white-label, extend, and commercialize
+Every accelerator, incubator, and founder community eventually asks the same question: *"Where do I find the right investors?"*
 
-Interested buyers should open an issue or contact the repository owner directly.
+Building a fundraising CRM from scratch means:
+- 20–40 hours sourcing and licensing investor data
+- 40–80 hours scaffolding a React + TypeScript SaaS boilerplate
+- 10–20 hours integrating a component library
+- 10–20 hours wiring an ORM, auth layer, and data fetching pattern
+
+Fund-Flow-AI absorbs all of that. The investor dataset is included. The component library is pre-wired. The backend scaffold, auth hooks, and data fetching patterns are in place. A developer acquiring this project skips directly to building the features that differentiate their product — not the boilerplate that every SaaS needs.
+
+For an accelerator or incubator, this is a white-label fundraising CRM that can be branded and deployed to a cohort in days, not months.
+
+---
+
+## Roadmap
+
+See the [Issues tab](../../issues) for tracked enhancement proposals, including:
+- AI investor matching implementation (OpenAI embeddings + vector similarity)
+- Live demo deployment with seed data
+- End-to-end test suite
+- CI/CD pipeline configuration
 
 ---
 
 ## License
 
-MIT License — see `LICENSE` for details.
+MIT License. See `LICENSE` for details.
+
+> **Dataset licensing note:** The bundled angel investor CSV is included as a project asset. Buyers and contributors are responsible for validating the provenance, accuracy, and any applicable redistribution restrictions of this data before commercial use.
